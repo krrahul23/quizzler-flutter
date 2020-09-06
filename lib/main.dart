@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'QuizBrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() => runApp(Quizzler());
 
@@ -28,32 +29,36 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
   QuizBrain quizBrain = QuizBrain();
-  void checkAnswer(bool userAnswer) {
-    if (userAnswer == quizBrain.getAnswer(quizBrain.getQuestionNumber())) {
-      setState(
-        () {
-          scoreKeeper.add(
-            Icon(
-              Icons.check_circle,
-              color: Colors.green,
-            ),
-          );
-        },
-      );
-    } else {
-      setState(
-        () {
-          scoreKeeper.add(
-            Icon(
-              Icons.cancel,
-              color: Colors.red,
-            ),
-          );
-        },
-      );
-    }
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer();
 
-    quizBrain.setQuestionNumber();
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        //Modified for our purposes:
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.',
+        ).show();
+
+        quizBrain.reset();
+
+        scoreKeeper = [];
+      } else {
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        quizBrain.nextQuestion();
+      }
+    });
   }
 
   @override
@@ -68,7 +73,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.getQuestion(quizBrain.getQuestionNumber()),
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
