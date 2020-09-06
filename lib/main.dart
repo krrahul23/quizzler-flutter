@@ -28,7 +28,34 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
   QuizBrain quizBrain = QuizBrain();
-  int questionNumber = 0;
+  void checkAnswer(bool userAnswer) {
+    if (userAnswer == quizBrain.getAnswer(quizBrain.getQuestionNumber())) {
+      setState(
+        () {
+          scoreKeeper.add(
+            Icon(
+              Icons.check_circle,
+              color: Colors.green,
+            ),
+          );
+        },
+      );
+    } else {
+      setState(
+        () {
+          scoreKeeper.add(
+            Icon(
+              Icons.cancel,
+              color: Colors.red,
+            ),
+          );
+        },
+      );
+    }
+
+    quizBrain.setQuestionNumber();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -41,7 +68,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.questionBank[questionNumber].questionText,
+                quizBrain.getQuestion(quizBrain.getQuestionNumber()),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -65,33 +92,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                if (quizBrain.questionBank[questionNumber].questionAnswer) {
-                  setState(
-                    () {
-                      scoreKeeper.add(
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  setState(
-                    () {
-                      scoreKeeper.add(
-                        Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                        ),
-                      );
-                    },
-                  );
-                }
-                questionNumber = questionNumber + 1;
-                if (questionNumber == quizBrain.questionBank.length) {
-                  questionNumber = 0;
-                }
+                checkAnswer(true);
               },
             ),
           ),
@@ -109,33 +110,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                if (!quizBrain.questionBank[questionNumber].questionAnswer) {
-                  setState(
-                    () {
-                      scoreKeeper.add(
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  setState(
-                    () {
-                      scoreKeeper.add(
-                        Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                        ),
-                      );
-                    },
-                  );
-                }
-                questionNumber = questionNumber + 1;
-                if (questionNumber == quizBrain.questionBank.length) {
-                  questionNumber = 0;
-                }
+                checkAnswer(false);
               },
             ),
           ),
